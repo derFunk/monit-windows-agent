@@ -31,7 +31,7 @@ namespace ChMonitoring.Helpers
 
             if (!File.Exists(monitIdFilePathName))
             {
-                idValue = GetUniqueWindowsIdByCPUAndHdd();
+                idValue = GetUniqueWindowsIdByGuid();
                 File.WriteAllText(monitIdFilePathName, idValue);
                 return idValue;
             }
@@ -41,7 +41,7 @@ namespace ChMonitoring.Helpers
             if (string.IsNullOrEmpty(idValue) || idValue.Length != 32)
             {
                 // If read ID was invalid, create a new one...
-                idValue = GetUniqueWindowsIdByCPUAndHdd();
+                idValue = GetUniqueWindowsIdByGuid();
                 File.WriteAllText(monitIdFilePathName, idValue);
             }
 
@@ -72,7 +72,7 @@ namespace ChMonitoring.Helpers
                 var idValueObj = idSubKey.GetValue(idValueName);
                 if (idValueObj == null)
                 {
-                    idValue = MD5(GetUniqueWindowsIdByCPUAndHdd()); // was before: Guid.NewGuid().ToString();
+                    idValue = MD5(GetUniqueWindowsIdByGuid()); // was before: Guid.NewGuid().ToString();
                     idSubKey.SetValue(idValueName, idValue);
                 }
                 else
@@ -111,6 +111,11 @@ namespace ChMonitoring.Helpers
             string volumeSerial = dsk["VolumeSerialNumber"].ToString();
 
             return MD5(cpuInfo + volumeSerial);
+        }
+
+        private static string GetUniqueWindowsIdByGuid()
+        {
+            return MD5(Guid.NewGuid().ToString());
         }
     }
 }
