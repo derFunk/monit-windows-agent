@@ -188,11 +188,13 @@ namespace ChMonitoring
                     var fsService = GetNewServiceSkeleton(MonitServiceType.TYPE_FILESYSTEM);
                     fsService.name = drive.VolumeLabel + " (" + drive.DriveFormat.ToUpper() +  ")";
 
+
+
                     fsService.block = new monitServiceBlock()
                     {
-                        total = drive.TotalFreeSpace,
-                        usage = drive.TotalFreeSpace - drive.AvailableFreeSpace,
-                        percent = (drive.TotalFreeSpace == 0) ? 100 : ((drive.AvailableFreeSpace/drive.TotalFreeSpace)*100),
+                        total = drive.TotalSize,
+                        usage = drive.TotalSize - drive.AvailableFreeSpace,
+                        percent = (drive.AvailableFreeSpace == 0) ? 100 : ((Convert.ToDecimal(drive.TotalSize) - Convert.ToDecimal(drive.AvailableFreeSpace)) / Convert.ToDecimal(drive.TotalSize) * 100),
                     };
 
                     fileSystemServices.Add(fsService);
