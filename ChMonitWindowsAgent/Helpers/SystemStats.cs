@@ -9,7 +9,13 @@ namespace ChMonitoring.Helpers
 
         internal static string GetHostname()
         {
-            return Environment.MachineName.ToLower();
+            //return Environment.MachineName.ToLower();
+            if (ConfigMgr.Config.DisplayName == null)
+            {
+                return Environment.MachineName.ToLower();
+            }
+
+            return ConfigMgr.Config.DisplayName.Replace("{COMPUTER_NAME}", Environment.MachineName.ToLower());
         }
 
         internal static uint GetMemorySizeKB()

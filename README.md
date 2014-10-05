@@ -10,6 +10,7 @@
  - Agent **client is already reporting system status** like CPU, HDD, Memory usage to M/Monit
  - Agent **server is running** with implemented responses to /\_status?format=xml, /\_getid and /\_ping requests
  - Current configuration takes place in a proprietary XML file
+ - Services can be configured in child configs: *.Service.xml
 
 ## Screenshots
 - M/Monit view of the windows agent:

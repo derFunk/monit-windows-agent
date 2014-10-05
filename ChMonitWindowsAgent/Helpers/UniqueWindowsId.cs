@@ -15,7 +15,18 @@ namespace ChMonitoring.Helpers
         /// <returns></returns>
         public static string GetOrCreateUniqueId()
         {
-            string monitIdFilePathName = Path.Combine(Environment.ExpandEnvironmentVariables("%HOMEDRIVE%%HOMEPATH%"), ".monit.id");
+            string monitIdFilePathName;
+            var candidatePath = Environment.ExpandEnvironmentVariables("%HOMEDRIVE%%HOMEPATH%");
+            if (Directory.Exists(candidatePath))
+            {
+                // This won't exist if running as System
+                monitIdFilePathName = Path.Combine(candidatePath, ".monit.id");
+            }
+            else
+            {
+                monitIdFilePathName = Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location), ".monit.id");
+            }
+
             string idValue;
 
             if (!File.Exists(monitIdFilePathName))

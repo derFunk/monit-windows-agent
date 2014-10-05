@@ -8,8 +8,9 @@ namespace ChMonitoring.Helpers
     {
         public static MonitWindowsAgentConfig Config { get; private set; }
 
-        public static void LoadConfig(string configFilePathName)
+        public static void LoadConfig(string path, string configFileName, string serviceConfigFileNameMasks)
         {
+            var configFilePathName = Path.Combine(path, configFileName);
             var ser = new XmlSerializer(typeof(MonitWindowsAgentConfig));
 
             if (!File.Exists(configFilePathName))
@@ -23,9 +24,24 @@ namespace ChMonitoring.Helpers
                 Config = ser.Deserialize(str) as MonitWindowsAgentConfig;
             }
 
+            var serviceConfigFilePathNames = Directory.GetFiles(path, serviceConfigFileNameMasks);
+            foreach (var serviceConfigFilePathName in serviceConfigFilePathNames)
+            {
+                using (var str = new FileStream(serviceConfigFilePathName, FileMode.Open, FileAccess.Read))
+                {
+                    var serviceConfig = ser.Deserialize(str) as MonitWindowsAgentConfig;
+                    foreach (var service in serviceConfig.Services)
+                    {
+                        Config.Services.Add(service);
+                    }
+                }
+            }
+
             // set period to ms
             if (Config.Period < 1000)
+            {
                 Config.Period *= 1000;
+            }
         }
 
         public static MonitWindowsAgentConfig WriteDefaultConfig(string configFilePathName)
@@ -41,6 +57,7 @@ namespace ChMonitoring.Helpers
                 conf.MMonitCollectorPassword = "password";
                 conf.MMonitCollectorUsername = "username";
                 conf.FailedStarts = 5;
+                conf.DisplayName = "foo-{COMPUTER_NAME}-bar";
                 conf.HttpdPort = 2812;
                 conf.HttpdBindIp = "127.0.0.1";
                 conf.HttpdPassword = "monit";

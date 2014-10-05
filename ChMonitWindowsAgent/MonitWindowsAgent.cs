@@ -45,7 +45,6 @@ namespace ChMonitoring
         private EventLog m_log;
 
         private string m_configFileName;
-        private string m_configFilePathName;
         // private XmlDocument m_configXmlDoc;
 
         private MMonitClient m_mMonitClient;
@@ -96,10 +95,8 @@ namespace ChMonitoring
             // load the config xml, generate if it doesn´t exist
             string path = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
             m_configFileName = typeof(MonitWindowsAgentConfig).Name + ".xml";
-            m_configFilePathName = Path.Combine(path, m_configFileName);
 
-            ConfigMgr.LoadConfig(m_configFilePathName);
-
+            ConfigMgr.LoadConfig(path, m_configFileName, "*.Service.xml");
         }
 
         public void Start()

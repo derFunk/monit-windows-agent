@@ -29,6 +29,9 @@ namespace ChMonitoring
         [XmlElement]
         public int FailedStarts;
 
+        [XmlElement]
+        public string DisplayName;
+
         /// <summary>
         /// Without credentials
         /// </summary>
