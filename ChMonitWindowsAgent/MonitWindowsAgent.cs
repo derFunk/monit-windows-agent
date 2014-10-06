@@ -45,12 +45,13 @@ namespace ChMonitoring
         private EventLog m_log;
 
         private string m_configFileName;
-        private string m_configFilePathName;
         // private XmlDocument m_configXmlDoc;
 
         private MMonitClient m_mMonitClient;
         private ServiceMonitoring m_serviceMonitoring;
         private MonitServer m_monitServer;
+
+        private SystemStats m_systemStats = new SystemStats();
 
         public static MonitWindowsAgent Instance { private set; get; }
 
@@ -96,10 +97,8 @@ namespace ChMonitoring
             // load the config xml, generate if it doesn´t exist
             string path = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
             m_configFileName = typeof(MonitWindowsAgentConfig).Name + ".xml";
-            m_configFilePathName = Path.Combine(path, m_configFileName);
 
-            ConfigMgr.LoadConfig(m_configFilePathName);
-
+            ConfigMgr.LoadConfig(path, m_configFileName, "*.Service.xml");
         }
 
         public void Start()
@@ -147,7 +146,7 @@ namespace ChMonitoring
             // CPU
             systemService.system.cpu = new monitServiceSystemCpu
             {
-                system = SystemStats.GetCPULoadPercentage(),
+                system = m_systemStats.GetCPULoadPercentage(),
                 user = 0,
             };
 
@@ -191,11 +190,13 @@ namespace ChMonitoring
                     var fsService = GetNewServiceSkeleton(MonitServiceType.TYPE_FILESYSTEM);
                     fsService.name = drive.VolumeLabel + " (" + drive.DriveFormat.ToUpper() +  ")";
 
+
+
                     fsService.block = new monitServiceBlock()
                     {
-                        total = drive.TotalFreeSpace,
-                        usage = drive.TotalFreeSpace - drive.AvailableFreeSpace,
-                        percent = (drive.TotalFreeSpace == 0) ? 100 : ((drive.AvailableFreeSpace/drive.TotalFreeSpace)*100),
+                        total = drive.TotalSize,
+                        usage = drive.TotalSize - drive.AvailableFreeSpace,
+                        percent = (drive.AvailableFreeSpace == 0) ? 100 : ((Convert.ToDecimal(drive.TotalSize) - Convert.ToDecimal(drive.AvailableFreeSpace)) / Convert.ToDecimal(drive.TotalSize) * 100),
                     };
 
                     fileSystemServices.Add(fsService);
