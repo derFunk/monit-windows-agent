@@ -51,6 +51,8 @@ namespace ChMonitoring
         private ServiceMonitoring m_serviceMonitoring;
         private MonitServer m_monitServer;
 
+        private SystemStats m_systemStats = new SystemStats();
+
         public static MonitWindowsAgent Instance { private set; get; }
 
         public MonitWindowsAgent(EventLog log)
@@ -144,7 +146,7 @@ namespace ChMonitoring
             // CPU
             systemService.system.cpu = new monitServiceSystemCpu
             {
-                system = SystemStats.GetCPULoadPercentage(),
+                system = m_systemStats.GetCPULoadPercentage(),
                 user = 0,
             };
 
